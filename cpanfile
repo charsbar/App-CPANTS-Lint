@@ -1,7 +1,7 @@
 requires 'Carp';
 requires 'Data::Dumper';
 requires 'Getopt::Long';
-requires 'Module::CPANTS::Analyse' => '0.92';
+requires 'Module::CPANTS::Analyse' => '0.88';
 requires 'Pod::Usage';
 
 on 'test' => sub {

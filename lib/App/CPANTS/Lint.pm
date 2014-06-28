@@ -209,7 +209,7 @@ Takes an optional hash (which will be passed into L<Module::CPANTS::Analyse> int
 
 Available options are:
 
-=open 4
+=over 4
 
 =item verbose
 

@@ -41,7 +41,7 @@ sub lint {
             push @{$res->{ignored} ||= []}, $ind->{name};
             next;
         }
-        if ($mca->x_opts->{ignore}{$ind->{name}} && $ind->{ignorable}) {
+        if ($mca->can('x_opts') && $mca->x_opts->{ignore}{$ind->{name}} && $ind->{ignorable}) {
             push @{$res->{ignored} ||= []}, $ind->{name};
             next;
         }

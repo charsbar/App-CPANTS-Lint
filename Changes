@@ -1,7 +1,7 @@
 Revision history for App-CPANTS-Lint
 
 0.02 2014/06/29
-    - Typo in pod (=open instead of =over)
+    - Typo in pod (=open instead of =over) (NEILB++)
 
 0.01 2014/06/29
     - initial release

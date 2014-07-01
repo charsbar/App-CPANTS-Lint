@@ -19,14 +19,23 @@ my @dists = (
   'ISHIGAKI/Acme-CPANAuthors-0.23.tar.gz',
 );
 
-plan tests => scalar @dists * 2;
-
-my $app = App::CPANTS::Lint->new;
-
 my $testdir = "$FindBin::Bin/worepan";
 mkpath $testdir unless -d $testdir;
 
-for my $dist (@dists) {
+for my $experimental (0..1) {
+  my $app = App::CPANTS::Lint->new(experimental => $experimental);
+
+  for my $dist (@dists) {
+    test($app, $dist);
+  }
+}
+
+rmtree $testdir if -d $testdir;
+
+done_testing;
+
+sub test {
+  my ($app, $dist) = @_;
   my $worepan = WorePAN->new(
     root => $testdir,
     files => [$dist],
@@ -41,12 +50,12 @@ for my $dist (@dists) {
 
   my $got = $app->lint($file);
   if ($got) {
-    note "Lint ok: $dist";
+    diag "Lint ok: $dist";
     like $app->report => qr/Congratulations/;
+    note $app->report;
   } else {
-    note "Lint fail: $dist";
+    diag "Lint fail: $dist";
     like $app->report => qr/Failed (?:core|extra) Kwalitee metrics/;
+    note $app->report;
   }
 }
-
-rmtree $testdir if -d $testdir;

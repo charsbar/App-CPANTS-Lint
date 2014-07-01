@@ -49,6 +49,7 @@ sub lint {
         my $type = $ind->{is_extra} ? 'extra' :
                    $ind->{is_experimental} ? 'experimental' :
                    'core';
+        next if $type eq 'experimental' && !$self->{opts}{experimental};
         my $error = $err{$ind->{name}};
         if ($error && ref $error) {
             $error = $self->_dump($error);
@@ -218,6 +219,10 @@ Makes L<Module::CPANTS::Analyse> verbose. False by default.
 =item core_only
 
 If true, the C<lint> method (see below) returns true even if C<extra> metrics (as well as C<experimental> metrics) fail. This may be useful if you only care Kwalitee rankings. False by default.
+
+=item experimental
+
+If true, failed C<experimental> metrics are also reported (via C<report> method). False by default. Note that C<experimental> metrics are not taken into account while calculating a score.
 
 =item save
 

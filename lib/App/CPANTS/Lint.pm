@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 use Module::CPANTS::Analyse;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub new {
     my ($class, %opts) = @_;

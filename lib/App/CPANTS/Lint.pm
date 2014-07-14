@@ -176,6 +176,10 @@ sub _colour_scheme {
 sub _colour {
     my ($self) = @_;
     my $scheme = $self->_colour_scheme;
+    my $icon = $^O eq 'MSWin32'
+        ? {pass => 'o', fail => 'x'}
+        : {pass => "\x{2713}", fail => "\x{2717}"};
+
     my $report = Term::ANSIColor::colored("Distribution: ", "bold $scheme->{heading}")
         . Term::ANSIColor::colored($self->result->{dist}, "bold $scheme->{title}")
         . "\n";
@@ -196,11 +200,11 @@ sub _colour {
             if ($failed{ $ind->{name} }) {
                 push @fails, $ind;
                 $core_fails++ if $type eq 'Core';
-                $report .= Term::ANSIColor::colored("  \x{2717} ", $scheme->{fail}) . $ind->{name};
+                $report .= Term::ANSIColor::colored("  $icon->{fail} ", $scheme->{fail}) . $ind->{name};
                 $report .= ": " . Term::ANSIColor::colored($failed{ $ind->{name} }{error}, $scheme->{error})
                     if $failed{ $ind->{name} }{error};
             } else {
-                $report .= Term::ANSIColor::colored("  \x{2713} ", $scheme->{pass}) . $ind->{name};
+                $report .= Term::ANSIColor::colored("  $icon->{pass} ", $scheme->{pass}) . $ind->{name};
             }
             $report .= "\n";
         }

@@ -70,7 +70,7 @@ Print some informative messages while analysing a distribution.
 
 =head2 --colour, --color
 
-Like C<< --verbose >>, but prettier.
+Like C<< --verbose >>, but prettier. You need to install L<Term::ANSIColor> (and L<Win32::Console::ANSI> for Win32) to enable this option.
 
 =head2 --dump
 

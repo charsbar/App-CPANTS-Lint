@@ -35,7 +35,7 @@ sub lint {
 
     my $kwl = $mca->d->{kwalitee};
     my %err = %{ $mca->d->{error} || {} };
-    my %fails;
+    my (%fails, %passes);
     for my $ind (@{$mca->mck->get_indicators}) {
         if ($ind->{needs_db}) {
             push @{$res->{ignored} ||= []}, $ind->{name};
@@ -109,6 +109,8 @@ sub report {
     # shortcut
     if ($self->{opts}{dump}) {
         return $self->_dump($self->stash, 'pretty');
+    } elsif ($self->{opts}{colour} && eval { require Term::ANSIColor }) {
+        return $self->_colour;
     }
 
     my $res = $self->{res} || {};
@@ -145,13 +147,66 @@ sub report {
     $report;
 }
 
+sub _colour {
+    my ($self) = @_;
+    my $report = Term::ANSIColor::colored("Distribution: ", "bold bright_white")
+        . Term::ANSIColor::colored($self->result->{dist}, "bold blue")
+        . "\n";
+    
+    my %failed;
+    for my $arr (values %{$self->result->{fails}}) {
+        for my $fail (@$arr) {
+            $failed{$fail->{name}} = $fail;
+        }
+    }
+    
+    my $core_fails = 0;
+    for my $type (qw/ Core Optional Experimental /) {
+        $report .= Term::ANSIColor::colored("\n$type\n", "bold bright_white");
+        my @inds = $self->{mca}->mck->get_indicators(lc $type);
+        my @fails;
+        for my $ind (@inds) {
+            if ($failed{ $ind->{name} }) {
+                push @fails, $ind;
+                $core_fails++ if $type eq 'Core';
+                $report .= Term::ANSIColor::colored("  \x{2717} ", "bright_red") . $ind->{name};
+                $report .= ": " . Term::ANSIColor::colored($failed{ $ind->{name} }{error}, "red")
+                    if $failed{ $ind->{name} }{error};
+            } else {
+                $report .= Term::ANSIColor::colored("  \x{2713} ", "bright_green") . $ind->{name};
+            }
+            $report .= "\n";
+        }
+        
+        for my $fail (@fails) {
+            $report .= "\n"
+                . Term::ANSIColor::colored("Name:   ", "bold blue")
+                . Term::ANSIColor::colored("$fail->{name}\n", "blue")
+                . Term::ANSIColor::colored("Remedy: ", "bold blue")
+                . Term::ANSIColor::colored("$fail->{remedy}\n", "blue");
+        }
+    }
+    
+    my $scorecolour = 'green';
+    $scorecolour = 'yellow' if keys %failed;
+    $scorecolour = 'red' if $core_fails;
+    
+    $report .= "\n"
+        . Term::ANSIColor::colored("Score: ", "bold bright_white")
+        . Term::ANSIColor::colored($self->result->{score}, "bold bright_$scorecolour")
+        . "\n";
+    
+    $report;
+}
+
 sub output_report {
     my $self = shift;
     if ($self->{opts}{save}) {
         my $file = $self->report_file;
-        open my $fh, '>', $file or croak "Cannot write to $file: $!";
+        open my $fh, '>:utf8', $file or croak "Cannot write to $file: $!";
         print $fh $self->report;
     } else {
+        binmode(STDOUT, ':utf8');
         print $self->report;
     }
 }

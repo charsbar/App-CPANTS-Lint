@@ -7,7 +7,7 @@ use Getopt::Long qw/:config gnu_compat/;
 use Pod::Usage;
 
 GetOptions(\my %opts, qw(
-  help|? man verbose dump yaml json save|to_file dir=s
+  help|? man verbose dump yaml json colour|color save|to_file dir=s
 ));
 
 pod2usage(1) if $opts{help};
@@ -38,6 +38,7 @@ cpants_lint.pl - commandline frontend to Module::CPANTS::Analyse
         --help              brief help message
         --man               full documentation
         --verbose           print more info during run
+        --colour, --color   pretty output
 
         --dump              dump result using Data::Dumper
         --yaml              dump result as YAML
@@ -66,6 +67,10 @@ Print manpage.
 =head2 --verbose
 
 Print some informative messages while analysing a distribution.
+
+=head2 --colour, --color
+
+Like C<< --verbose >>, but prettier.
 
 =head2 --dump
 

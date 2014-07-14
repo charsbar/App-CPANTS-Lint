@@ -156,10 +156,28 @@ sub _supports_colour {
     }
 }
 
+sub _colour_scheme {
+    my $self = shift;
+    my %scheme = (
+        heading => "bright_white",
+        title => "blue",
+        fail => "bright_red",
+        pass => "bright_green",
+        warn => "bright_yellow",
+        error => "red",
+        summary => "blue",
+    );
+    if ($^O eq 'MSWin32') {
+        $scheme{$_} =~ s/bright_// for keys %scheme;
+    }
+    \%scheme;
+}
+
 sub _colour {
     my ($self) = @_;
-    my $report = Term::ANSIColor::colored("Distribution: ", "bold bright_white")
-        . Term::ANSIColor::colored($self->result->{dist}, "bold blue")
+    my $scheme = $self->_colour_scheme;
+    my $report = Term::ANSIColor::colored("Distribution: ", "bold $scheme->{heading}")
+        . Term::ANSIColor::colored($self->result->{dist}, "bold $scheme->{title}")
         . "\n";
     
     my %failed;
@@ -171,38 +189,38 @@ sub _colour {
     
     my $core_fails = 0;
     for my $type (qw/ Core Optional Experimental /) {
-        $report .= Term::ANSIColor::colored("\n$type\n", "bold bright_white");
+        $report .= Term::ANSIColor::colored("\n$type\n", "bold $scheme->{heading}");
         my @inds = $self->{mca}->mck->get_indicators(lc $type);
         my @fails;
         for my $ind (@inds) {
             if ($failed{ $ind->{name} }) {
                 push @fails, $ind;
                 $core_fails++ if $type eq 'Core';
-                $report .= Term::ANSIColor::colored("  \x{2717} ", "bright_red") . $ind->{name};
-                $report .= ": " . Term::ANSIColor::colored($failed{ $ind->{name} }{error}, "red")
+                $report .= Term::ANSIColor::colored("  \x{2717} ", $scheme->{fail}) . $ind->{name};
+                $report .= ": " . Term::ANSIColor::colored($failed{ $ind->{name} }{error}, $scheme->{error})
                     if $failed{ $ind->{name} }{error};
             } else {
-                $report .= Term::ANSIColor::colored("  \x{2713} ", "bright_green") . $ind->{name};
+                $report .= Term::ANSIColor::colored("  \x{2713} ", $scheme->{pass}) . $ind->{name};
             }
             $report .= "\n";
         }
         
         for my $fail (@fails) {
             $report .= "\n"
-                . Term::ANSIColor::colored("Name:   ", "bold blue")
-                . Term::ANSIColor::colored("$fail->{name}\n", "blue")
-                . Term::ANSIColor::colored("Remedy: ", "bold blue")
-                . Term::ANSIColor::colored("$fail->{remedy}\n", "blue");
+                . Term::ANSIColor::colored("Name:   ", "bold $scheme->{summary}")
+                . Term::ANSIColor::colored("$fail->{name}\n", $scheme->{summary})
+                . Term::ANSIColor::colored("Remedy: ", "bold $scheme->{summary}")
+                . Term::ANSIColor::colored("$fail->{remedy}\n", $scheme->{summary});
         }
     }
     
-    my $scorecolour = 'green';
-    $scorecolour = 'yellow' if keys %failed;
-    $scorecolour = 'red' if $core_fails;
+    my $scorecolour = $scheme->{pass};
+    $scorecolour = $scheme->{warn} if keys %failed;
+    $scorecolour = $scheme->{fail} if $core_fails;
     
     $report .= "\n"
-        . Term::ANSIColor::colored("Score: ", "bold bright_white")
-        . Term::ANSIColor::colored($self->result->{score}, "bold bright_$scorecolour")
+        . Term::ANSIColor::colored("Score: ", "bold $scheme->{heading}")
+        . Term::ANSIColor::colored($self->result->{score}, "bold $scorecolour")
         . "\n";
     
     $report;

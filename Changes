@@ -1,5 +1,8 @@
 Revision history for App-CPANTS-Lint
 
+0.04 2014/07/14
+    - Added colo(u)r option (TOBYINK++)
+
 0.03 2014/07/01
     - Not to show experimental fails unless 'experimental' option
       is set (NEILB++)

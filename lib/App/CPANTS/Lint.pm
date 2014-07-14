@@ -109,7 +109,7 @@ sub report {
     # shortcut
     if ($self->{opts}{dump}) {
         return $self->_dump($self->stash, 'pretty');
-    } elsif ($self->{opts}{colour} && eval { require Term::ANSIColor }) {
+    } elsif ($self->{opts}{colour} && $self->_supports_colour) {
         return $self->_colour;
     }
 
@@ -145,6 +145,15 @@ sub report {
     }
 
     $report;
+}
+
+sub _supports_colour {
+    my $self = shift;
+    eval {
+        require Term::ANSIColor;
+        require Win32::Console::ANSI if $^O eq 'MSWin32';
+        1
+    }
 }
 
 sub _colour {

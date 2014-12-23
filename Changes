@@ -1,5 +1,10 @@
 Revision history for App-CPANTS-Lint
 
+0.05 2014/12/23
+    - Added metrics_path option to use extra metrics modules
+      (such as modules under Module::CPANTS::SiteKwalitee::)
+    - Fixed README
+
 0.04 2014/07/14
     - Added colo(u)r option (TOBYINK++)
 

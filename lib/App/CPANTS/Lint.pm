@@ -11,6 +11,9 @@ sub new {
     my ($class, %opts) = @_;
     $opts{no_capture} = 1 if !defined $opts{no_capture};
     $opts{dump} = 1 if $opts{yaml} || $opts{json};
+    if ($opts{metrics_path}) {
+        Module::CPANTS::Analyse->import(@{$opts{metrics_path}});
+    }
     bless {opts => \%opts}, $class;
 }
 
@@ -317,6 +320,10 @@ If true, C<output_report> method writes to a file instead of writing to STDOUT.
 =item dump, yaml, json
 
 If true, C<report> method returns a formatted dump of the stash (see below).
+
+=item search_path
+
+If you'd like to use extra metrics modules, pass a reference to an array of their parent namespace(s) to search. Metrics modules under Module::CPANTS::Kwalitee namespace are always used.
 
 =back
 

@@ -7,7 +7,7 @@ use Getopt::Long qw/:config gnu_compat/;
 use Pod::Usage;
 
 GetOptions(\my %opts, qw(
-  help|? man verbose dump yaml json colour|color save|to_file dir=s
+  help|? man verbose dump yaml json colour|color save|to_file dir=s metrics_path=s@
 ));
 
 pod2usage(1) if $opts{help};
@@ -46,6 +46,7 @@ cpants_lint.pl - commandline frontend to Module::CPANTS::Analyse
 
         --save              write report (or dump) to a file
         --dir               directory to save a report to
+        --metrics_path      search path for extra metrics modules
 
 
 =head1 DESCRIPTION
@@ -93,6 +94,10 @@ The name of the file will be F<Foo-Dist.txt> (well, the extension depends on the
 =head3 --dir
 
 Directory to dump a file to. Defaults to the current working directory.
+
+=head3 --metrics_path
+
+Search path for extra metrics modules
 
 =head1 AUTHOR
 
